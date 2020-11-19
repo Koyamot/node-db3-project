@@ -5,7 +5,11 @@ const db = require('../data/db-config.js')
 module.exports = {
     find,
     findById,
-    findSteps
+    findSteps,
+    add,
+    update,
+    remove,
+    addStep
 }
 
 async function find() {
@@ -30,22 +34,46 @@ async function findSteps(id) {
     try {
         const steps = await
             db('steps')
-            .join('schemes', 'schemes.id', 'steps.schemeid')
-            .where({id}).first();
+            .where({ scheme_id: id })
+            .orderBy('step_number')
         return steps;
     } catch (err) {
         throw err;
     }
 }
 
-async function add(scheme) {
-
+async function add(schemeData) {
+    try {
+        const addScheme = await db('schemes').insert(schemeData)
+        return addScheme;
+    } catch (err) {
+        throw err;
+    }
 }
 
 async function update(changes, id) {
-
+    try {
+        const updated = await db('schemes').update(changes).where({ id })
+        return updated;
+    } catch (err) {
+        throw err;
+    }
 }
 
 async function remove(id) {
+    try {
+       const deleted = await db('schemes').where({ id }).del();
+       return deleted; 
+    } catch (err) {
+        throw err;
+    }
+}
 
+async function addStep(stepData, id) {
+    try {
+        const addStep = await db('steps').insert({ ...stepData, scheme_id: id})
+        return addStep;
+    } catch (err) {
+        throw err;
+    }
 }
